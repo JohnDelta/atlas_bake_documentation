@@ -8,6 +8,8 @@
 ![Blender 4.2+](https://img.shields.io/badge/Blender-4.2%2B-orange?logo=blender)
 ![Platforms](https://img.shields.io/badge/OS-Windows%20|%20macOS%20|%20Linux-informational)
 
+Documentation Site: https://johndelta.github.io/atlas_bake_documentation/
+
 ## Overview
 **Texture baking** includes complex, multi-material shader setups into a compact set of textures (Base Color, Normal, Metallic, Roughness, AO, Opacity, etc.). Game engines like **Unity** and **Unreal** expect these textures in **specific color spaces** and often **packed** into channels (for example, Unity’s Metallic+Smoothness or Unreal/glTF’s ORM).  
 
