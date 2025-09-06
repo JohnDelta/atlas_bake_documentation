@@ -1,7 +1,7 @@
 # Atlas Bake – A Blender Add-on for Texture Baking
 
 <p>
-  <img width="800" height="600" alt="logo_2nd" src="https://github.com/user-attachments/assets/0cdd22f7-0518-4d14-a00c-242f3261c2dc" title="Atlas Bake Landing"/>
+  <img width="800" height="600" alt="logo_2nd" src="https://github.com/user-attachments/assets/226ef4f5-ae36-4801-9964-85cd42168076" title="Atlas Bake Landing"/>
 </p>
   
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
@@ -33,7 +33,7 @@ A typical manual workflow can be long and error-prone:
 This add-on's goal is to make baking fast and predictable without burying you in toggles. If there’s an essential control you feel is missing, tell me. Whilst This is built to stay lean, I'd be happy to add genuinely high-value options.
 
 <p align="center">
-  <img width="1908" height="1376" alt="process_4" src="https://github.com/user-attachments/assets/c5c5ce63-31a5-4683-aa5d-b9e3ff5ea85f" title="A simple bakings process" />
+  <img width="1908" height="1376" alt="process_4" src="https://github.com/user-attachments/assets/228c6c8e-3969-4529-b648-7fce80f023d5" title="A simple bakings process" />
 </p>
 
 ---
@@ -88,7 +88,7 @@ This add-on's goal is to make baking fast and predictable without burying you in
   Supports absolute paths and `//` relative to the current `.blend`.
   
 <p align="center">
-  <img width="690" height="604" alt="atlas_bake_metadata" src="https://github.com/user-attachments/assets/bb40ed4e-9963-4282-8d12-410f5ddba367" title="Add-On Preferences."/><br>
+  <img width="690" height="604" alt="atlas_bake_metadata" src="https://github.com/user-attachments/assets/066635fa-fe20-4302-a783-dd20ba331d0f" title="Add-On Preferences."/><br>
   <em>Add-On Preferences.</em>
 </p>
 
@@ -111,7 +111,7 @@ This add-on's goal is to make baking fast and predictable without burying you in
 9. (Optional) Enable **Export FBX**.
 10. Click **Bake**. Watch **status & progress** update while your open file remains safe and responsive.
 
-![high_to_low_process_2](https://github.com/user-attachments/assets/c2fbc947-49a7-4058-91bb-6411a5005b84)
+![high_to_low_process_2](https://github.com/user-attachments/assets/f2c23fca-902c-42ec-b54d-c110688b30b3)
 
 ### Custom Channel Packing (the example of Metallic–Smoothness)
 
@@ -139,7 +139,7 @@ Packing:
    - **Alternatively**, use the **Add Presets** option that will automatically append the channel list with custom packs for Metallic–Smoothness / ORM / HDRP mask.
 
 <p align="center">
-  <img width="443" height="395" alt="image" src="https://github.com/user-attachments/assets/3b47fe0f-6193-4873-9b66-651c24f1f0ed" title="Custom channel pack settings for metallic smoothness."/><br>
+  <img width="443" height="395" alt="image" src="https://github.com/user-attachments/assets/6947718f-cab8-422b-a01e-4a4234fe4717" title="Custom channel pack settings for metallic smoothness."/><br>
   <em>Custom channel pack settings for metallic smoothness.</em>
 </p>
 
@@ -151,7 +151,7 @@ Packing:
    - Verify metal vs dielectric and highlight roll-off look correct.
 
 <p align="center">
-  <img width="1238" height="314" alt="process_5" src="https://github.com/user-attachments/assets/bfa8aac5-3eed-4d22-9ba5-70cf4a7388c5" title="Result: one RGBA packed map driving Metallic (R) and Smoothness (A)." />
+  <img width="1238" height="314" alt="process_5" src="https://github.com/user-attachments/assets/1ff4ee2d-c741-4038-8e99-aa6432ed8f2b" title="Result: one RGBA packed map driving Metallic (R) and Smoothness (A)." />
   <em>Result: one RGBA packed map driving Metallic (R) and Smoothness (A).</em>
 </p>
 
@@ -160,7 +160,7 @@ Packing:
 Goal: Bake the **High** keyboard (with text meshes) into the **Low** keyboard (no text meshes) so the low-poly keycaps get textures containing the legends.
 
 <p align="center">
-  <img width="1258" height="890" alt="process_1" src="https://github.com/user-attachments/assets/f32bc9f2-38e1-4200-bb54-85be553c84d2" title="The high-poly and low-poly models."/><br>
+  <img width="1258" height="890" alt="process_1" src="https://github.com/user-attachments/assets/5aa91188-2dcd-4115-acf1-5b060f41ad46" title="The high-poly and low-poly models."/><br>
   <em>The high-poly and low-poly models.</em>
 </p>
 
@@ -177,7 +177,7 @@ Goal: Bake the **High** keyboard (with text meshes) into the **Low** keyboard (n
    - If legends look flat: give High text a small **thickness 0.2–0.5 mm**, **or** use a **Cage**, **or** increase **Max Ray Distance** slightly.
 
 <p align="center">
-  <img width="457" height="289" alt="high_keyboard_detail" src="https://github.com/user-attachments/assets/de0b1b34-80ca-4782-883a-e0697b531932" title="High to Low Poly Bake Settings."/><br>
+  <img width="457" height="289" alt="high_keyboard_detail" src="https://github.com/user-attachments/assets/1d4813da-1d77-444e-9179-917d3df127b6" title="High to Low Poly Bake Settings."/><br>
   <em>High to Low Poly Bake Settings.</em>
 </p>
 
@@ -186,7 +186,7 @@ Goal: Bake the **High** keyboard (with text meshes) into the **Low** keyboard (n
    - Apply the baked textures to the **Low** keyboard materials and verify the legends on the keycaps.
 
 <p align="center">
-  <img width="1330" height="982" alt="process_2" src="https://github.com/user-attachments/assets/47379327-88a7-44ba-bf0d-6019d8e7bd38" title="Bake process completed. The low-poly result model with the assigned textures."/><br>
+  <img width="1330" height="982" alt="process_2" src="https://github.com/user-attachments/assets/8ab252a7-f05c-4ef9-9caf-489620e13de3" title="Bake process completed. The low-poly result model with the assigned textures."/><br>
   <em>Bake process completed. The low-poly result model with the assigned textures.</em>
 </p>
 
