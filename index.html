@@ -1,0 +1,541 @@
+<!doctype html>
+
+<html lang="en" data-bs-theme="dark">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Atlas Bake — Blender Texture Baking Add-on</title>
+    <meta name="description" content="Atlas Bake — A Blender add-on that automates end-to-end texture baking, channel packing, Smart UV, high→low projection, and FBX export with logs and a safe background process.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+      
+      html { 
+        scroll-behavior: smooth; 
+      }
+      
+      body { 
+        -webkit-font-smoothing: antialiased; 
+      }
+
+      .navbar-blur { 
+        backdrop-filter: saturate(1.25) blur(6px); 
+        background-color: rgba(255,255,255,.85); 
+      }
+      
+      @media (prefers-color-scheme: dark) {
+        .navbar-blur { background-color: rgba(22,22,24,.7); }
+      }
+
+      .hero {
+        background: radial-gradient(1200px 600px at 10% -10%, rgba(13,110,253,.07), transparent),
+                    radial-gradient(1200px 600px at 110% 10%, rgba(32,201,151,.07), transparent);
+        border-bottom: 1px solid rgba(0,0,0,.06);
+      }
+
+      .badge-dot { 
+        width:.55rem; 
+        height:.55rem; 
+        border-radius:50%; 
+        display:inline-block; 
+        margin-right:.4rem; 
+      }
+      
+      .toc {
+        position: sticky; top: 6rem; /* account for navbar */
+        max-height: calc(100vh - 8rem); 
+        overflow: auto; 
+        padding-right:.25rem;
+      }
+      
+      .toc a { 
+        text-decoration: none; 
+      }
+      
+      .section { 
+        scroll-margin-top: 5.5rem; 
+      }
+      
+      pre, code, kbd, samp { 
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; 
+      }
+      
+      pre {
+        background: var(--bs-tertiary-bg);
+        padding: 1rem;
+        border-radius: .5rem; 
+        border: 1px solid var(--bs-border-color);
+        overflow: auto; 
+        margin-bottom: 1rem;
+      }
+      
+      .figure img { 
+        border-radius: .5rem; 
+      }
+      
+      .figure-caption { 
+        font-size: .9rem; 
+        color: var(--bs-secondary-color); 
+      }
+      
+      .card-callout { 
+        border-left: .25rem solid var(--bs-primary); 
+      }
+      
+      .footer small a { 
+        text-decoration: none; 
+      }
+
+      .img-shadow { 
+        box-shadow: 0 1rem 2rem rgba(0,0,0,.08); 
+      }
+
+    </style>
+  </head>
+
+  <body data-bs-spy="scroll" data-bs-target="#toc-nav" data-bs-offset="120" tabindex="0">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top navbar-light border-bottom navbar-blur">
+      <div class="container">
+        <a class="navbar-brand fw-semibold" href="#top">
+          <img 
+            class="img-fluid img-shadow" 
+            width="75" 
+            height="75" 
+            src="./assets/logo.png" 
+            alt="Atlas Bake Logo" 
+            title="Atlas Bake Logo">
+        </a>
+        <button class="navbar-toggler" 
+          type="button" 
+          data-bs-toggle="collapse" 
+          data-bs-target="#navCollapse" 
+          aria-controls="navCollapse" 
+          aria-expanded="false" 
+          aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div id="navCollapse" class="collapse navbar-collapse">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" href="#overview">Overview</a></li>
+            <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+            <li class="nav-item"><a class="nav-link" href="#installation">Install</a></li>
+            <li class="nav-item"><a class="nav-link" href="#quickstart">Quick Start</a></li>
+            <li class="nav-item">
+              <a class="btn btn-primary ms-lg-5" href="https://github.com/JohnDelta/atlas_bake_documentation" target="_blank" rel="noopener">
+                <span>Repository</span>
+                <i class="fa-brands fa-github"></i>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <header id="top" class="hero py-5 mt-5">
+      <div class="container mt-5">
+        <div class="row align-items-center gy-4">
+          <div class="col-lg-7">
+            <h1 class="display-5 fw-bold mb-3">Atlas Bake - A blender Add-on for Texture Baking</h1>
+            <p class="lead mb-4">
+              Bake clean, engine-ready textures (BaseColor, Normal, Metallic, Roughness, AO, Opacity), 
+              build custom channel packs, 
+              handle UVs, 
+              project High→Low, and export FBX — all in a <strong>safe background subprocess</strong> so your open <code>.blend</code> stays untouched.
+            </p>
+            <div class="d-flex flex-wrap gap-2">
+              <span class="badge text-bg-primary">Blender 4.2+</span>
+              <span class="badge text-bg-secondary">Windows · macOS · Linux</span>
+              <span class="badge text-bg-success">GPL-3.0-or-later</span>
+            </div>
+          </div>
+          <div class="col-lg-5 text-center">
+            <figure class="figure">
+              <img 
+                class="img-fluid img-shadow" 
+                width="800" 
+                height="600" 
+                src="./assets/logo_background_1.png" 
+                alt="Atlas Bake Landing" 
+                title="Atlas Bake Landing">
+            </figure>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="py-5">
+      <div class="container">
+        <div class="row g-5">
+          <!-- TOC -->
+          <aside class="col-lg-3 d-none d-lg-block">
+            <nav id="toc-nav" class="toc">
+              <div class="list-group list-group-flush small">
+                <a class="list-group-item list-group-item-action" href="#overview">Overview</a>
+                <a class="list-group-item list-group-item-action" href="#features">Key Features</a>
+                <a class="list-group-item list-group-item-action" href="#installation">Installation</a>
+                <a class="list-group-item list-group-item-action" href="#quickstart">Quick Start</a>
+                <a class="list-group-item list-group-item-action" href="#packing">Custom Channel Packing</a>
+                <a class="list-group-item list-group-item-action" href="#hi2lo">High → Low Baking</a>
+                <a class="list-group-item list-group-item-action" href="#output">Output & Naming</a>
+                <a class="list-group-item list-group-item-action" href="#faq">FAQ / Tips</a>
+                <a class="list-group-item list-group-item-action" href="#contact">Contact</a>
+              </div>
+            </nav>
+          </aside>
+
+          <!-- Content -->
+          <section class="col-lg-9">
+
+            <section id="overview" class="section mb-5">
+              <h2 class="mb-3">Overview</h2>
+              <p>
+                <strong>Texture baking</strong> condenses complex, 
+                multi-material shaders into a compact set of textures ready for engines like
+                <strong>Unity</strong> and <strong>Unreal</strong>. 
+                Engines expect specific <em>color spaces</em> and often <em>packed channels</em> (Unity’s Metallic+Smoothness,
+                Unreal/glTF’s <abbr title="Occlusion-Roughness-Metallic">ORM</abbr>).
+              </p>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="card card-callout">
+                    <div class="card-body">
+                      <h6 class="card-title">Typical manual steps</h6>
+                      <ul class="mb-0">
+                        <li>Pick Cycles + samples</li>
+                        <li>Ensure correct UVs</li>
+                        <li>Create images & color spaces</li>
+                        <li>Handle scalar reroutes (Metal/Rough)</li>
+                        <li>Normals (OpenGL/DirectX)</li>
+                        <li>AO / Opacity</li>
+                        <li>Packed outputs (ex. MS/HDRP/ORM)</li>
+                        <li>Build atlas material & export</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="card border-primary">
+                    <div class="card-body">
+                      <h6 class="card-title">Atlas Bake solves this</h6>
+                      <p class="mb-2">Automates end-to-end with safe defaults and clear status.</p>
+                      <ul class="mb-0">
+                        <li>Correct color spaces per map</li>
+                        <li>OpenGL (Y+) / DirectX (Y−) normals</li>
+                        <li>Custom channel packs with presets</li>
+                        <li>Smart UV or Use Selected UV</li>
+                        <li>High→Low baking (max ray, cage, extrusion)</li>
+                        <li>Atlas material & optional FBX export</li>
+                        <li>Runs in a <strong>background headless</strong> Blender subprocess</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <figure class="figure mt-4">
+                <img class="img-fluid img-shadow" src="./assets/high_to_low_process_2.gif" width="1908" height="1376" alt="A simple baking process" title="A simple baking process">
+                <figcaption class="figure-caption text-center">A simple baking process.</figcaption>
+              </figure>
+
+              <div class="alert alert-secondary mt-4" role="alert">
+                <strong>Design philosophy:</strong> simple workflow, uncluttered UI. If a control feels essential and is missing, let me know, the goal is to stay lean while adding high-value options.
+              </div>
+            </section>
+
+            <section id="features" class="section mb-5">
+              <h2 class="mb-3">Key features at a glance</h2>
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <ul>
+                    <li><strong>Per-map baking</strong>: Base Color (sRGB), Emission (sRGB), Normal (Non-Color), Metallic (Non-Color), Roughness (Non-Color), AO (Non-Color), Opacity (Non-Color). Metallic & Roughness use a safe temporary Emission reroute for scalar accuracy.</li>
+                    <li><strong>Material selection (whitelist)</strong>: Only included materials are processed in Atlas/Smart-UV.</li>
+                    <li><strong>Custom Packs</strong>: Build your own packs, or use the presets MS, HDRP Mask, ORM. Dependency-aware and reusable via a preferences folder (absolute and <code>//</code> relative paths supported).</li>
+                    <li><strong>UV handling</strong>: <em>MANUAL</em> (pick existing UV) or <em>SMART</em> (auto-create & unwrap <code>AtlasBakedUV</code> with Angle Limit & Island Margin; applied to included materials).</li>
+                  </ul>
+                </div>
+                <div class="col-md-6">
+                  <ul>
+                    <li><strong>High→Low projected baking</strong>: Selected→Active with Max Ray Distance, Cage Object, or Virtual Cage Extrusion.</li>
+                    <li><strong>Exports</strong>: Optional FBX of a duplicate with atlas material; UV0 enforced. Option to <em>Keep Final .blend</em> with relative paths (or packed images).</li>
+                    <li><strong>Normals</strong>: OpenGL (Y+) or DirectX (Y−) with optional Flip Normal Y.</li>
+                    <li><strong>Performance & Quality</strong>: GPU Compute (optional), Resolution, Bake Margin (px) vs UV Island Margin.</li>
+                  </ul>
+                </div>
+              </div>
+              <ul class="mt-3">
+                <li>
+                  <strong>Clear status & safe operation</strong>: 
+                  Work runs in a background, headless Blender subprocess 
+                  using a temporary copy. Your open file remains responsive 
+                  and unmodified while it receives regularly updates about the progress.
+                </li>
+              </ul>
+            </section>
+
+            <section id="installation" class="section mb-5">
+              <h2 class="mb-3">Installation</h2>
+              <ol>
+                <li>Download the packaged <code>.zip</code>.</li>
+                <li>In Blender: <em>Edit → Preferences → Add-ons → Install…</em> and select the file.</li>
+                <li>Enable <strong>Atlas Bake</strong>.</li>
+                <li>Find it in <em>3D View → N-Panel → Atlas Bake</em>.</li>
+              </ol>
+              <h5 class="mt-4">Add-on Preferences</h5>
+              <ul>
+                <li><strong>Enable Logs</strong>: write detailed bake logs (e.g., <code>logs.txt</code>) into the output folder.</li>
+                <li><strong>Custom Channel Pack Folder</strong>: where your pack definitions live (absolute or <code>//</code> relative to the current <code>.blend</code>).</li>
+              </ul>
+              <figure class="figure mt-3">
+                <img 
+                  class="img-fluid img-shadow" 
+                  width="690" 
+                  height="604" 
+                  src="./assets/atlas_bake_metadata.png" 
+                  alt="Add-On Preferences" 
+                  title="Add-On Preferences">
+                <figcaption class="figure-caption text-center">Add-On Preferences.</figcaption>
+              </figure>
+            </section>
+
+            <section id="quickstart" class="section mb-5">
+              <h2 class="mb-3">Quick Start — Simple model baking</h2>
+              <ol>
+                <li><strong>Select one source mesh.</strong></li>
+                <li>In <em>Textures</em>, enable the maps you want.</li>
+                <li>Choose <em>UV Mode</em>:
+                  <ul>
+                    <li><strong>MANUAL</strong> → pick your UV map, or</li>
+                    <li><strong>SMART</strong> → set <em>UV Angle Limit</em> & <em>UV Island Margin</em>.</li>
+                  </ul>
+                </li>
+                <li>In <em>Materials to Include</em>, check materials to process (default: all).</li>
+                <li>Pick <strong>Normal Convention</strong> (OpenGL vs DirectX); optionally <em>Flip Normal Y</em>.</li>
+                <li>Set <strong>Resolution</strong>, <strong>Samples</strong>, <strong>Bake Margin (px)</strong>, and optionally <strong>Use GPU</strong>.</li>
+                <li>(Optional) Add <strong>Custom Packs</strong> (or use the presets: MS/HDRP/ORM.)</li>
+                <li>Choose a valid <strong>Output Folder</strong>.</li>
+                <li>(Optional) Enable <strong>Export FBX</strong> / <strong>Keep Final .blend</strong>.</li>
+                <li>Click <strong>Bake</strong> and watch the status/progress as your open file stays safe.</li>
+              </ol>
+              <figure class="figure">
+                <img class="img-fluid img-shadow" 
+                    width="1330"  
+                    height="982"
+                    src="./assets/process_4.png"
+                    alt="Result: Game ready asset packed with the selected basic textures."
+                    title="Result: Game ready asset packed with the selected basic textures.">
+                <figcaption class="figure-caption text-center">Result: Game ready asset packed with the selected basic textures.</figcaption>
+              </figure>
+            </section>
+
+            <section id="packing" class="section mb-5">
+              <h2 class="mb-3">Custom Channel Packing, a Metallic–Smoothness example</h2>
+              <div class="row g-3">
+                <div class="col-lg-7">
+                  <p><strong>Why pack channels?</strong> Engines often require packed maps to reduce sampler count and bandwidth, and to match expected inputs:
+                    <em>Unity Standard/URP</em> uses <strong>Metallic + Smoothness (A)</strong>, <em>glTF/Unreal</em> use <strong>ORM</strong> (R=AO, G=Roughness, B=Metallic), and <em>Unity HDRP</em> uses a <strong>Mask Map</strong> (typically R=Metallic, G=AO, B=Detail, A=Smoothness).</p>
+                  <p><em>Key concept:</em> <strong>Metallic–Smoothness</strong> means <code>R = Metallic</code>, <code>A = 1 − Roughness</code> (Smoothness). <strong>ORM</strong> means <code>R = AO</code>, <code>G = Roughness</code>, <code>B = Metallic</code>.</p>
+                  <ol class="mb-3">
+                    <li>Follow the <em>Quick Start</em> steps to set up your bake.</li>
+                    <li>Open <strong>Custom Packs</strong> → <em>New Pack</em>, name it <code>MetallicSmoothness_Unity</code>, set <em>Output Format</em> = RGBA (8-bit).</li>
+                    <li>Map channels:
+                      <ul>
+                        <li><strong>R</strong> → Metallic</li>
+                        <li><strong>G</strong> → None (0)</li>
+                        <li><strong>B</strong> → None (0)</li>
+                        <li><strong>A</strong> → Roughness with <em>Invert</em> (Smoothness)</li>
+                      </ul>
+                      Ensure <em>Metallic</em> and <em>Roughness</em> inputs are enabled for the pack.
+                      Alternatively, use <em>Add Presets</em> to append MS / ORM / HDRP mask in one click.
+                    </li>
+                    <li>Click <strong>Bake</strong> to generate the packed texture.</li>
+                    <li><strong>Assign in-engine</strong> (Unity): set Base Map = BaseColor; Metallic Map = the packed <em>Metallic–Smoothness</em> (A channel drives Smoothness).</li>
+                  </ol>
+                </div>
+                <div class="col-lg-5">
+                  <figure class="figure">
+                    <img class="img-fluid img-shadow" 
+                      width="443" 
+                      height="395"
+                      src="./assets/custom_channel_setting.png"
+                      alt="Custom channel pack settings for Metallic Smoothness"
+                      title="Custom channel pack settings for Metallic Smoothness">
+                    <figcaption class="figure-caption text-center">Custom pack settings for Metallic–Smoothness.</figcaption>
+                  </figure>
+                </div>
+              </div>
+              <figure class="figure">
+                  <img class="img-fluid img-shadow" 
+                      width="1330"  
+                      height="982"
+                      src="./assets/process_5.png"
+                      alt="Result: one RGBA packed map driving Metallic (R) and Smoothness (A)."
+                      title="Result: one RGBA packed map driving Metallic (R) and Smoothness (A).">
+                  <figcaption class="figure-caption text-center">Result: one RGBA packed map driving Metallic (R) and Smoothness (A).</figcaption>
+                </figure>
+            </section>
+
+            <section id="hi2lo" class="section mb-5">
+              <h2 class="mb-3">High → Low poly baking, a keyboard / keys scenario</h2>
+              <p>Goal: Bake the <em>High</em> keyboard (with text meshes) into the <em>Low</em> keyboard (no text meshes) so the low-poly keycaps get textures containing the legends.</p>
+              <figure class="figure">
+                <img class="img-fluid img-shadow" 
+                    width="1258" 
+                    height="890"
+                    src="./assets/process_1.png"
+                    alt="The high-poly and low-poly models" 
+                    title="The high-poly and low-poly models">
+                <figcaption class="figure-caption text-center">The high-poly and low-poly models.</figcaption>
+              </figure>
+              <div class="row g-3">
+                <div class="col-lg-7">
+                  <ol>
+                    <li>Follow <em>Quick Start</em> to prepare your settings.</li>
+                    <li><strong>Select Source & Target</strong>: Select <em>High</em> (source), enable <em>Bake to Target</em>, set <em>Target = Low</em> (receiver). Keep both objects aligned with identical origins.</li>
+                    <li><strong>Projection control</strong>:
+                      <ul>
+                        <li>Start with <em>Max Ray Distance</em> ≈ <code>0.2–0.5%</code> of model size.</li>
+                        <li>For tight gaps/decals, use a <em>Cage</em> or <em>Cage Extrusion</em> (~<code>0.2–0.5%</code> outward).</li>
+                        <li>Thin legends: add slight thickness on High (e.g., 0.2–0.5 mm) or rely on a cage to capture shallow relief.</li>
+                      </ul>
+                    </li>
+                    <li>Click <strong>Bake</strong> and monitor the progress UI.</li>
+                    <li>Assign the baked textures to the Low model and verify the result.</li>
+                  </ol>
+                </div>
+                <div class="col-lg-5">
+                  <figure class="figure">
+                    <img class="img-fluid img-shadow" 
+                        width="457" 
+                        height="289"
+                        src="./assets/high_keyboard_detail.png"
+                        alt="High to Low Poly Bake Settings" 
+                        title="High to Low Poly Bake Settings">
+                    <figcaption class="figure-caption text-center">High→Low bake settings.</figcaption>
+                  </figure>
+                </div>
+              </div>
+              <figure class="figure">
+                <img class="img-fluid img-shadow" 
+                    width="1330"  
+                    height="982"
+                    src="./assets/process_2.png"
+                    alt="Bake process completed. The low-poly result model with the assigned textures."
+                    title="Bake process completed. The low-poly result model with the assigned textures.">
+                <figcaption class="figure-caption text-center">Bake completed — Low-poly with assigned textures.</figcaption>
+              </figure>
+            </section>
+
+            <section id="output" class="section mb-5">
+              <h2 class="mb-3">Output & naming</h2>
+              <p>Textures are saved into your chosen <strong>Output Folder</strong>. Typical names:</p>
+  <pre><code>&lt;Object&gt;_&lt;Map&gt;_&lt;Resolution&gt;.png
+  # e.g., Crate_BaseColor_2048.png, Crate_Normal_2048.png
+  </code></pre>
+              <p>Packed outputs follow their pack name:</p>
+  <pre><code>&lt;Object&gt;_MS_2048.png
+  &lt;Object&gt;_HDRPMask_2048.png
+  &lt;Object&gt;_ORM_2048.png
+  </code></pre>
+            </section>
+
+            <section id="faq" class="section mb-5">
+              <h2 class="mb-3">FAQ / Tips</h2>
+              <div class="accordion" id="faqAcc">
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="q1">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a1" aria-expanded="false" aria-controls="a1">
+                      Metallic/Roughness look wrong in the result.
+                    </button>
+                  </h2>
+                  <div id="a1" class="accordion-collapse collapse" aria-labelledby="q1" data-bs-parent="#faqAcc">
+                    <div class="accordion-body">
+                      Ensure Metallic & Roughness are baked as <em>Non-Color</em> data. Atlas Bake temporarily routes scalar sockets through Emission for reliable baking. In Unity, remember <strong>Smoothness = 1 − Roughness</strong> (A channel in Metallic–Smoothness).
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="q2">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a2" aria-expanded="false" aria-controls="a2">
+                      Normals look inverted.
+                    </button>
+                  </h2>
+                  <div id="a2" class="accordion-collapse collapse" aria-labelledby="q2" data-bs-parent="#faqAcc">
+                    <div class="accordion-body">
+                      Check the <strong>Normal Convention</strong>: OpenGL (Y+) vs DirectX (Y−). Try toggling <em>Flip Normal Y</em> if your target engine uses the opposite convention.
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="q3">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a3" aria-expanded="false" aria-controls="a3">
+                      UVs overlap after Smart UV.
+                    </button>
+                  </h2>
+                  <div id="a3" class="accordion-collapse collapse" aria-labelledby="q3" data-bs-parent="#faqAcc">
+                    <div class="accordion-body">
+                      Increase <em>UV Island Margin</em> and/or <em>Bake Margin (px)</em>. For tight assets, consider <em>MANUAL</em> UVs or limit Smart UV to specific materials via the whitelist.
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="q4">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a4" aria-expanded="false" aria-controls="a4">
+                      Is my open .blend modified during the bake?
+                    </button>
+                  </h2>
+                  <div id="a4" class="accordion-collapse collapse" aria-labelledby="q4" data-bs-parent="#faqAcc">
+                    <div class="accordion-body">
+                      No. Baking runs in a <strong>background headless</strong> Blender subprocess on a temporary copy of your scene. Your open file stays responsive and unmodified.
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </section>
+
+            <section id="contact" class="section mb-5">
+              <h2 class="mb-3">Contact</h2>
+              <p>Questions or issues? Open an issue on the <a href="https://github.com/yourname/atlas-bake" target="_blank" rel="noopener">GitHub Repository</a> or Email: <a href="mailto:john.deligiannis1@gmail.com">john.deligiannis1@gmail.com</a>.</p>
+            </section>
+
+            <section id="license" class="section mb-4">
+              <h2 class="mb-3">License</h2>
+              <p>
+                <strong>GPL-3.0-or-later</strong>. See the <a href="./LICENSE" target="_blank" rel="noopener">LICENSE</a> file for details.
+              </p>
+            </section>
+
+            <hr class="my-5">
+            <p class="text-center">
+              <a class="btn btn-outline-primary" href="#top" aria-label="Back to top">Back to top ↑</a>
+            </p>
+
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <footer class="border-top py-4">
+      <div class="container footer d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
+        <small class="text-secondary">© <span id="y"></span> Atlas Bake — Blender Texture Baking Add-on</small>
+        <small class="text-secondary">
+          <a href="https://github.com/JohnDelta/atlas_bake_documentation" target="_blank" rel="noopener">GitHub</a> ·
+          <a href="#license">License</a> ·
+          <a href="#contact">Contact</a>
+        </small>
+      </div>
+    </footer>
+
+    <script>
+      document.getElementById('y').textContent = new Date().getFullYear();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
