@@ -450,18 +450,6 @@
             <section id="faq" class="section mb-5">
               <h2 class="mb-3">FAQ / Tips</h2>
               <div class="accordion" id="faqAcc">
-                <div class="accordion-item">
-                  <h2 class="accordion-header" id="q1">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a1" aria-expanded="false" aria-controls="a1">
-                      Metallic/Roughness look wrong in the result.
-                    </button>
-                  </h2>
-                  <div id="a1" class="accordion-collapse collapse" aria-labelledby="q1" data-bs-parent="#faqAcc">
-                    <div class="accordion-body">
-                      Ensure Metallic & Roughness are baked as <em>Non-Color</em> data. Atlas Bake temporarily routes scalar sockets through Emission for reliable baking. In Unity, remember <strong>Smoothness = 1 − Roughness</strong> (A channel in Metallic–Smoothness).
-                    </div>
-                  </div>
-                </div>
 
                 <div class="accordion-item">
                   <h2 class="accordion-header" id="q2">
@@ -498,6 +486,129 @@
                   <div id="a4" class="accordion-collapse collapse" aria-labelledby="q4" data-bs-parent="#faqAcc">
                     <div class="accordion-body">
                       No. Baking runs in a <strong>background headless</strong> Blender subprocess on a temporary copy of your scene. Your open file stays responsive and unmodified.
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="q5">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a5" aria-expanded="false" aria-controls="a5">
+                      The background subprocess crashed or the progress bar is stuck. What should I do?
+                    </button>
+                  </h2>
+                  <div id="a5" class="accordion-collapse collapse" aria-labelledby="q5" data-bs-parent="#faqAcc">
+                    <div class="accordion-body">
+                      Atlas Bake runs the bake in a <strong>headless Blender subprocess</strong> so your open file remains safe. If that worker crashes, the UI may appear to be “stuck on Baking…”.<br><br>
+                      <strong>Quick recovery:</strong>
+                      <ol class="mb-2">
+                        <li>Click <em>Cancel Bake</em>. This drops a <code>cancel.flag</code> into the worker folder and the UI should clear within a few seconds.</li>
+                        <li>If the UI still looks stuck, press <em>Cancel Bake</em> again, then toggle the panel (collapse/expand) or switch tabs to force a refresh.</li>
+                        <li>Open the <strong>Worker folder</strong> path shown in the panel (if displayed) and delete the temporary worker directory to clean up.</li>
+                        <li>As a last resort, save your .blend and restart Blender (your open scene was never modified by the worker.)</li>
+                      </ol>
+                      <small class="text-muted">Tip: Check the <code>bake.log</code> inside the worker folder for the crash reason (GPU memory, missing textures, etc.).</small>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="q6">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a6" aria-expanded="false" aria-controls="a6">
+                      The bake feels slow or lags. How can I speed it up?
+                    </button>
+                  </h2>
+                  <div id="a6" class="accordion-collapse collapse" aria-labelledby="q6" data-bs-parent="#faqAcc">
+                    <div class="accordion-body">
+                      Baking performance depends on scene complexity, texture size, and device setup.
+                      <ul class="mb-2">
+                        <li><strong>Use GPU:</strong> In Preferences → System, enable your GPU (CUDA/OptiX/Metal). In Atlas Bake, enable <em>Use GPU</em>.</li>
+                        <li><strong>Lower samples for scalar maps:</strong> BaseColor/Normal might need more samples in some pipelines, but Metallic/Roughness/AO usually look identical at 1–4 samples.</li>
+                        <li><strong>Reduce texture size:</strong> Try 2K instead of 4K while iterating.</li>
+                        <li><strong>Limit included materials/objects:</strong> Bake only what you need.</li>
+                        <li><strong>Apply Scale/Rotation</strong> on high/low before high→low baking to avoid projection re-tries.</li>
+                        <li><strong>Disable heavy modifiers</strong> (or use a duplicate export mesh) to reduce geometry the worker has to process.</li>
+                        <li><strong>Close other heavy apps</strong> to free VRAM/RAM.</li>
+                      </ul>
+                      <small class="text-muted">If you still see stalls, check <code>bake.log</code> in the worker folder for time sinks (UV unwrap, subdivision, memory).</small>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="q7">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a7" aria-expanded="false" aria-controls="a7">
+                      What texture formats are exported?
+                    </button>
+                  </h2>
+                  <div id="a7" class="accordion-collapse collapse" aria-labelledby="q7" data-bs-parent="#faqAcc">
+                    <div class="accordion-body">
+                      Currently Atlas Bake exports <strong>PNG</strong> (lossless, RGBA). This is a solid default for engines and DCC tools.<br><br>
+                      <strong>Recommended color spaces in Blender:</strong>
+                      <ul class="mb-2">
+                        <li><em>sRGB</em>: Base Color (albedo).</li>
+                        <li><em>Non-Color</em>: Metallic, Roughness, AO, Opacity, packed channels, Normal maps.</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="q8">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a8" aria-expanded="false" aria-controls="a8">
+                      What export formats are supported?
+                    </button>
+                  </h2>
+                  <div id="a8" class="accordion-collapse collapse" aria-labelledby="q8" data-bs-parent="#faqAcc">
+                    <div class="accordion-body">
+                      Atlas Bake currently exports <strong>FBX</strong> and a baked <strong>.blend</strong> copy of the result.
+                      <ul class="mb-2">
+                        <li><strong>FBX:</strong> Engine-ready (Unity/Unreal friendly). Textures are written to your output folder; materials are set up to reference those files.</li>
+                        <li><strong>.blend:</strong> A saved baked scene you can re-open and tweak.</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="q9">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a9" aria-expanded="false" aria-controls="a9">
+                      Where are my baked textures and exports saved?
+                    </button>
+                  </h2>
+                  <div id="a9" class="accordion-collapse collapse" aria-labelledby="q9" data-bs-parent="#faqAcc">
+                    <div class="accordion-body">
+                      Use the <strong>Output directory</strong> in Atlas Bake’s panel.
+                      <ul class="mb-2">
+                        <li>Paths starting with <code>//</code> are relative to your <strong>.blend</strong> (e.g., <code>//atlas_bake_packs/</code>).</li>
+                        <li>If the .blend is <strong>unsaved</strong>, Atlas Bake resolves to a safe temporary location and shows the raw string in the UI so you can adjust it.</li>
+                        <li>Each job creates a <strong>worker folder</strong> for logs and intermediates; final textures and exports go to the output directory.</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="q10">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a10" aria-expanded="false" aria-controls="a10">
+                      Where can I find logs if something goes wrong?
+                    </button>
+                  </h2>
+                  <div id="a10" class="accordion-collapse collapse" aria-labelledby="q10" data-bs-parent="#faqAcc">
+                    <div class="accordion-body">
+                      Open the <strong>worker folder</strong> path (shown during a bake, if available). You’ll find <code>logs.text</code>. These logs capture device selection, UV unwrap, image saves, and exporter output. It's the fastest way to spot missing textures or GPU memory errors.
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="q11">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a11" aria-expanded="false" aria-controls="a11">
+                      How do I cancel a bake safely?
+                    </button>
+                  </h2>
+                  <div id="a11" class="accordion-collapse collapse" aria-labelledby="q11" data-bs-parent="#faqAcc">
+                    <div class="accordion-body">
+                      Click <strong>Cancel Bake</strong>. Atlas Bake writes a <code>cancel.flag</code> to the worker folder and stops the job cleanly without touching your open scene. If you’ve mapped <kbd>Esc</kbd> to call the same operator, pressing <kbd>Esc</kbd> will do the same. Once canceled, the status changes to <em>“Cancel requested…”</em> and the UI clears when the worker exits.
                     </div>
                   </div>
                 </div>
