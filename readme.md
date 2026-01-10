@@ -10,6 +10,8 @@
 
 Product: https://superhivemarket.com/products/atlas-bake
 
+Documentation Site: https://johndelta.github.io/atlas_bake_documentation/
+
 ## Overview
 **Texture baking** includes complex, multi-material shader setups into a compact set of textures (Base Color, Normal, Metallic, Roughness, AO, Opacity, etc.). Game engines like **Unity** and **Unreal** expect these textures in **specific color spaces** and often **packed** into channels (for example, Unity’s Metallic+Smoothness or Unreal/glTF’s ORM).  
 
