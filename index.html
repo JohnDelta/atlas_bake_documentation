@@ -179,6 +179,7 @@
           <aside class="col-lg-3 d-none d-lg-block">
             <nav id="toc-nav" class="toc">
               <div class="list-group list-group-flush small">
+                <a class="list-group-item list-group-item-action" href="#whats-new">What's New</a>
                 <a class="list-group-item list-group-item-action" href="#overview">Overview</a>
                 <a class="list-group-item list-group-item-action" href="#features">Key Features</a>
                 <a class="list-group-item list-group-item-action" href="#installation">Installation</a>
@@ -194,6 +195,23 @@
 
           <!-- Content -->
           <section class="col-lg-9">
+
+            <section id="whats-new" class="section mb-5">
+              <h2 class="mb-3">What's New</h2>
+              <div class="alert alert-primary" role="alert">
+                <h5 class="alert-heading">Latest Update Highlights</h5>
+                <p class="mb-2">This release brings major workflow improvements for working with multiple objects, parallel baking, and richer export control:</p>
+                <ul class="mb-0">
+                  <li><strong>Multi-mesh baking</strong>: Select multiple meshes and bake them all in a single job. Each mesh gets its own textures, UV pass, and material configuration.</li>
+                  <li><strong>Parallel task queue</strong>: Start bakes on multiple objects simultaneously. A new <strong>Tasks</strong> panel tracks every job's name, state (Running / Done / Error / Canceled), and live progress bar. Jobs persist across Blender sessions.</li>
+                  <li><strong>Task Name &amp; output subfolders</strong>: Each bake job requires a <em>Task Name</em>. Results are saved under <code>Output Folder / Task Name /</code>, so runs for different iterations never overwrite each other.</li>
+                  <li><strong>FBX export sub-options</strong>: When <em>Export FBX</em> is enabled, three new sub-options appear: <strong>Include Armature</strong> (skeleton &amp; weights, on by default), <strong>Include Shape Keys</strong> (blend shapes, on by default), and <strong>Include Animations</strong> (NLA actions, off by default).</li>
+                  <li><strong>Keep Final .blend</strong>: Writes a single clean <code>.blend</code> into your output folder containing all baked meshes and their textures together, without touching your working file.</li>
+                  <li><strong>High→Low restriction</strong>: When <em>Bake to Target</em> is active, only one source mesh is allowed; selecting more blocks the bake with a clear error.</li>
+                  <li><strong>Home icon shortcut</strong>: Click the home icon next to the Output Folder path to auto-set it to the folder of the current <code>.blend</code> file.</li>
+                </ul>
+              </div>
+            </section>
 
             <section id="overview" class="section mb-5">
               <h2 class="mb-3">Overview</h2>
@@ -264,8 +282,8 @@
                 </div>
                 <div class="col-md-6">
                   <ul>
-                    <li><strong>High→Low projected baking</strong>: Selected→Active with Max Ray Distance, Cage Object, or Virtual Cage Extrusion.</li>
-                    <li><strong>Exports</strong>: Optional FBX of a duplicate with atlas material; UV0 enforced. Option to <em>Keep Final .blend</em> with relative paths (or packed images).</li>
+                    <li><strong>High→Low projected baking</strong>: Selected→Active (one source mesh) with Max Ray Distance, Cage Object, or Virtual Cage Extrusion.</li>
+                    <li><strong>Exports</strong>: Optional FBX per mesh (UV0 enforced) with sub-options for <em>Include Armature</em>, <em>Include Shape Keys</em>, and <em>Include Animations</em>. Option to <em>Keep Final .blend</em> (all baked meshes in one file, relative or packed paths).</li>
                     <li><strong>Normals</strong>: OpenGL (Y+) or DirectX (Y−) with optional Flip Normal Y.</li>
                     <li><strong>Performance & Quality</strong>: GPU Compute (optional), Resolution, Bake Margin (px) vs UV Island Margin.</li>
                   </ul>
@@ -273,9 +291,17 @@
               </div>
               <ul class="mt-3">
                 <li>
-                  <strong>Clear status & safe operation</strong>: 
-                  Work runs in a background, headless Blender subprocess 
-                  using a temporary copy. Your open file remains responsive 
+                  <strong>Multi-mesh baking</strong>:
+                  Select multiple meshes and bake them all in a single job - each gets its own textures, UV pass, and material whitelist configurable per mesh.
+                </li>
+                <li>
+                  <strong>Parallel task queue</strong>:
+                  Start bakes on multiple objects simultaneously. The <strong>Tasks</strong> panel tracks every job (Running / Done / Error / Canceled) with a live progress bar. Jobs persist across Blender sessions; if Blender closes mid-bake the task is restored as an error with the last known progress.
+                </li>
+                <li>
+                  <strong>Clear status & safe operation</strong>:
+                  Work runs in a background, headless Blender subprocess
+                  using a temporary copy. Your open file remains responsive
                   and unmodified while it receives regularly updates about the progress.
                 </li>
               </ul>
@@ -309,21 +335,28 @@
             <section id="quickstart" class="section mb-5">
               <h2 class="mb-3">Quick Start - Simple model baking</h2>
               <ol>
-                <li><strong>Select one source mesh.</strong></li>
+                <li><strong>Select one or more source meshes.</strong> All selected meshes bake in the same job, each producing its own set of textures.</li>
                 <li>In <em>Textures</em>, enable the maps you want.</li>
                 <li>Choose <em>UV Mode</em>:
                   <ul>
-                    <li><strong>MANUAL</strong> → pick your UV map, or</li>
+                    <li><strong>MANUAL</strong> → a UV map dropdown appears per mesh (defaults to the first available UV layer). The Bake button stays disabled until every selected mesh has a UV map assigned.</li>
                     <li><strong>SMART</strong> → set <em>UV Angle Limit</em> & <em>UV Island Margin</em>.</li>
                   </ul>
                 </li>
-                <li>In <em>Materials to Include</em>, check materials to process (default: all).</li>
+                <li>In <em>Materials to Include</em>, check materials to process. Materials are grouped by mesh - each group has <strong>All</strong> / <strong>None</strong> shortcut buttons (default: all included).</li>
                 <li>Pick <strong>Normal Convention</strong> (OpenGL vs DirectX); optionally <em>Flip Normal Y</em>.</li>
                 <li>Set <strong>Resolution</strong>, <strong>Samples</strong>, <strong>Bake Margin (px)</strong>, and optionally <strong>Use GPU</strong>.</li>
                 <li>(Optional) Add <strong>Custom Packs</strong> (or use the presets: MS/HDRP/ORM.)</li>
-                <li>Choose a valid <strong>Output Folder</strong>.</li>
-                <li>(Optional) Enable <strong>Export FBX</strong> / <strong>Keep Final .blend</strong>.</li>
-                <li>Click <strong>Bake</strong> and watch the status/progress as your open file stays safe.</li>
+                <li>Choose a valid <strong>Output Folder</strong>. Click the <strong>home icon</strong> next to the path field to auto-set it to the folder of the current <code>.blend</code>.</li>
+                <li>(Optional) Enable <strong>Export FBX</strong> (one file per mesh) and/or <strong>Keep Final .blend</strong> (all baked meshes in one file). When Export FBX is on, three sub-options appear:
+                  <ul>
+                    <li><strong>Include Armature</strong> (on by default) - exports skeleton &amp; vertex weights.</li>
+                    <li><strong>Include Shape Keys</strong> (on by default) - preserves blend shapes/morph targets.</li>
+                    <li><strong>Include Animations</strong> (off by default) - bakes and exports all NLA actions.</li>
+                  </ul>
+                </li>
+                <li>Enter a <strong>Task Name</strong> in the field above the Bake button. This identifies the job in the Tasks panel and becomes the output subfolder (e.g. <code>Output Folder/MyTask/</code>). The Bake button stays disabled until a name, output folder, and (in MANUAL mode) a UV map for every mesh are provided.</li>
+                <li>Click <strong>Bake Atlas</strong>. The job appears in the <strong>Tasks</strong> panel with a live progress bar. Your open file stays safe and responsive - you can start additional bakes while this one runs.</li>
               </ol>
               <figure class="figure">
                 <img class="img-fluid img-shadow" 
@@ -399,7 +432,7 @@
                 <div class="col-lg-7">
                   <ol>
                     <li>Follow <em>Quick Start</em> to prepare your settings.</li>
-                    <li><strong>Select Source & Target</strong>: Select <em>High</em> (source), enable <em>Bake to Target</em>, set <em>Target = Low</em> (receiver). Keep both objects aligned with identical origins.</li>
+                    <li><strong>Select Source & Target</strong>: Select <em>High</em> (source - exactly one mesh when using Bake to Target), enable <em>Bake to Target</em>, set <em>Target = Low</em> (receiver). Selecting more than one source mesh while Bake to Target is active will block the bake with an error. Keep both objects aligned with identical origins.</li>
                     <li><strong>Projection control</strong>:
                       <ul>
                         <li>Start with <em>Max Ray Distance</em> ≈ <code>0.2–0.5%</code> of model size.</li>
@@ -436,7 +469,20 @@
 
             <section id="output" class="section mb-5">
               <h2 class="mb-3">Output & naming</h2>
-              <p>Textures are saved into your chosen <strong>Output Folder</strong>. Typical names:</p>
+              <p>Each bake writes its files into a <strong>named subfolder</strong> inside your Output Folder, using the <strong>Task Name</strong> you provided. When multiple meshes are baked in a single job, each mesh produces its own set of textures - all written into the same subfolder:</p>
+  <pre><code>Output Folder/
+└── &lt;Task Name&gt;/
+    ├── &lt;Object1&gt;_BaseColor_2048.png
+    ├── &lt;Object1&gt;_Normal_2048.png
+    ├── &lt;Object1&gt;_MS_2048.png          (if a Custom Pack is enabled)
+    ├── &lt;Object2&gt;_BaseColor_2048.png   (second mesh, if multiple were selected)
+    ├── &lt;Object2&gt;_Normal_2048.png
+    ├── &lt;Object1&gt;.fbx                  (if Export FBX is enabled - one file per mesh)
+    ├── &lt;Object2&gt;.fbx
+    ├── &lt;Task Name&gt;_baked.blend        (if Keep Final .blend is enabled)
+    └── logs.txt                       (if logging is enabled)
+  </code></pre>
+              <p>Typical texture file names:</p>
   <pre><code>&lt;Object&gt;_&lt;Map&gt;_&lt;Resolution&gt;.png
   # e.g., Crate_BaseColor_2048.png, Crate_Normal_2048.png
   </code></pre>
@@ -445,6 +491,26 @@
   &lt;Object&gt;_HDRPMask_2048.png
   &lt;Object&gt;_ORM_2048.png
   </code></pre>
+
+              <h5 class="mt-4">Tasks panel</h5>
+              <p>The <strong>Tasks</strong> section at the bottom of the panel shows all jobs for the current session and any restored from a previous one:</p>
+              <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                  <thead>
+                    <tr><th>Column</th><th>Description</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>State icon</td><td>⏱ Running · ✓ Done · ✗ Error · ⊘ Canceled</td></tr>
+                    <tr><td>Name (Object)</td><td>The task name and source mesh(es); multiple meshes are shown comma-joined</td></tr>
+                    <tr><td>Progress bar</td><td>Live step count from the background worker</td></tr>
+                    <tr><td>⚙</td><td>Opens a popup with the full settings snapshot for that job</td></tr>
+                    <tr><td>?</td><td>Hover to read the error message (Error jobs only)</td></tr>
+                    <tr><td>✕</td><td>Cancels a running job; removes a finished one</td></tr>
+                    <tr><td>🗑 (header)</td><td>Removes all Done / Error / Canceled jobs at once</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="mb-0">Jobs survive Blender being closed: when you reopen the file, any job that was running is restored as <strong>Error</strong> with the message <em>"Blender was closed before the bake completed."</em> and its last known progress. Completed and errored jobs persist until you explicitly remove them.</p>
             </section>
 
             <section id="faq" class="section mb-5">
