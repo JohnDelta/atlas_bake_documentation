@@ -518,6 +518,32 @@
               <div class="accordion" id="faqAcc">
 
                 <div class="accordion-item">
+                  <h2 class="accordion-header" id="q12">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a12" aria-expanded="false" aria-controls="a12">
+                      Why do I get "Active/selected source must be a mesh" when selecting multiple meshes?
+                    </button>
+                  </h2>
+                  <div id="a12" class="accordion-collapse collapse" aria-labelledby="q12" data-bs-parent="#faqAcc">
+                    <div class="accordion-body">
+                      This has been improved in the latest version. Atlas Bake now supports selecting and baking multiple mesh objects in one task. Each bake runs through the new task system, with its own <strong>Task Name</strong>, output subfolder, progress tracking, and saved results. Just make sure all selected objects are valid mesh objects. Note: when <strong>Bake to Target / High-&gt;Low</strong> baking is enabled, only one source mesh is allowed.
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="q13">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a13" aria-expanded="false" aria-controls="a13">
+                      Can I bake multiple meshes, and will the exported FBX still include the armature?
+                    </button>
+                  </h2>
+                  <div id="a13" class="accordion-collapse collapse" aria-labelledby="q13" data-bs-parent="#faqAcc">
+                    <div class="accordion-body">
+                      Yes. Atlas Bake now supports multi-mesh baking, so you can select multiple mesh objects and bake them in a single job. Each mesh gets its own textures, UV pass, and material setup. When <strong>Export FBX</strong> is enabled, you can also choose to include <strong>Armature</strong> / skeleton &amp; weights, <strong>Shape Keys</strong> / blend shapes, and <strong>Animations</strong> / NLA actions.
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
                   <h2 class="accordion-header" id="q2">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a2" aria-expanded="false" aria-controls="a2">
                       Normals look inverted.
